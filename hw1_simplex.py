@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Simplex method implementation using Numpy
+Problem 6 on homework 1
 """
 
 import numpy as np
@@ -24,11 +25,12 @@ def find_pivot(m):
 
     # Divide the column (except the bottom row), returning +inf if by zero
     ratios = [
-        np.abs(last_column[i] / m[i, col_i]) if m[i, col_i] else np.inf
+        last_column[i] / m[i, col_i] if m[i, col_i] else np.inf
+        # np.abs(last_column[i] / m[i, col_i]) if m[i, col_i] else np.inf
         for i in range(len(last_column) - 1)
     ]
 
-    # The smallest ratio is the pivot column
+    # The smallest ratio is the pivot row
     row_i = np.argmin(ratios)
     return (row_i, col_i)
 
@@ -55,7 +57,7 @@ def pivot_column(m, row_i, col_i):
             continue
         row -= pivot_row * row[col_i]
 
-    print(m)
+    return m
 
 
 if __name__ == "__main__":
@@ -69,5 +71,15 @@ if __name__ == "__main__":
         dtype=np.float64,
     )
 
-    (row_i, col_i) = find_pivot(m)
-    pivot_column(m, row_i, col_i)
+    while True:
+        pivot = find_pivot(m)
+
+        if pivot is None:
+            print("Done!")
+            print(m)
+            break
+
+        print("Pivot:", pivot)
+        (row_i, col_i) = pivot
+        m = pivot_column(m, row_i, col_i)
+        print("New m:\n", m)

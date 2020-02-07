@@ -78,44 +78,44 @@ def simplex_solve(c, p):
     Returns the maximum profit value.
     """
 
+    # First, we combine the constraints and (negated) profit function
+    # into a single matrix.
     constraints = np.array(c)[:, 0:-1]
     profit = np.array([-np.array(p)])
     m = np.append(constraints, profit, axis=0)
 
+    # We add an identity matrix, which represents the slack variables
+    # and profit.
     m = np.append(m, np.identity(len(m)), axis=1)
 
+    # We add the constraint values (and a 0 for profit).
     last_column = np.array(c)[:, -1:]  # Excludes the bottom row
     last_column = np.append(last_column, [[0]], axis=0)
 
     m = np.append(m, last_column, axis=1)
 
+    # Then, run the Simplex loop!
     print("Starting m:\n", m)
     while True:
         pivot = find_pivot(m)
 
         if pivot is None:
             print("Done!")
-            # print(m)
             break
 
         print("Pivot:", pivot)
+
         (row_i, col_i) = pivot
-        m = pivot_column(m, row_i, col_i)
+        m = pivot_column(m, row_i, col_i)  # Execute the pivot
+
         print("New m:\n", m)
 
+    # The profit is the value in the last column, divided by the number
+    # in the profit column.
     return m[-1, -1] / m[-1, -2]
 
 
 if __name__ == "__main__":
-    # m = np.array(
-    # [
-    # [1, 1, 1, 1, 0, 0, 0, 12],
-    # [5, 3, 0, 0, 1, 0, 0, 20],
-    # [0, 9, 2, 0, 0, 1, 0, 20],
-    # [-8, 6, -4, 0, 0, 0, 1, 0],
-    # ],
-    # dtype=np.float64,
-    # )
 
     c = [[1, 1, 1, 12], [5, 3, 0, 20], [0, 9, 2, 20]]
     p = [8, -6, 4]

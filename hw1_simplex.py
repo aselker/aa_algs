@@ -76,6 +76,9 @@ def simplex_solve(c, p):
     p - the profit function, as coefficients
 
     Returns the maximum profit value.
+
+    Worst case runtime: exp(a), where a is the number of constraints. 
+    Avg. case runtime: Some polynomial, depends on your problems.
     """
 
     # First, we combine the constraints and (negated) profit function

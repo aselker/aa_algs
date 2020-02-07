@@ -30,8 +30,8 @@ def find_pivot(m):
         for i in range(len(last_column) - 1)
     ]
 
-    # The smallest ratio is the pivot row
-    row_i = np.argmin(ratios)
+    # The smallest non-negative ratio is the pivot row
+    row_i = np.argmin([(r if 0 <= r else np.inf) for r in ratios])
     return (row_i, col_i)
 
 
@@ -71,12 +71,13 @@ if __name__ == "__main__":
         dtype=np.float64,
     )
 
+    print("Starting m:\n", m)
     while True:
         pivot = find_pivot(m)
 
         if pivot is None:
             print("Done!")
-            print(m)
+            # print(m)
             break
 
         print("Pivot:", pivot)

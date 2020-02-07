@@ -79,18 +79,15 @@ def simplex_solve(c, p):
     """
 
     constraints = np.array(c)[:, 0:-1]
-    constraints = np.append(constraints, np.identity(len(c)), axis=1)
+    profit = np.array([-np.array(p)])
+    m = np.append(constraints, profit, axis=0)
+
+    m = np.append(m, np.identity(len(m)), axis=1)
 
     last_column = np.array(c)[:, -1:]  # Excludes the bottom row
-    print(last_column)
+    last_column = np.append(last_column, [[0]], axis=0)
 
-    bottom_row = np.array(p)
-    bottom_row = np.append(bottom_row, 0)  # Add a 0 in the value column
-    bottom_row = np.array([bottom_row])
-    print(bottom_row)
-
-    m = np.append(constraints, last_column, axis=1)
-    m = np.append(m, bottom_row, axis=0)
+    m = np.append(m, last_column, axis=1)
 
     print("Starting m:\n", m)
     while True:
@@ -106,33 +103,21 @@ def simplex_solve(c, p):
         m = pivot_column(m, row_i, col_i)
         print("New m:\n", m)
 
-    print("Starting m:\n", m)
-    while True:
-        pivot = find_pivot(m)
-
-        if pivot is None:
-            print("Done!")
-            # print(m)
-            break
-
-        print("Pivot:", pivot)
-        (row_i, col_i) = pivot
-        m = pivot_column(m, row_i, col_i)
-        print("New m:\n", m)
+    return m[-1, -1] / m[-1, -2]
 
 
 if __name__ == "__main__":
-    m = np.array(
-        [
-            [1, 1, 1, 1, 0, 0, 0, 12],
-            [5, 3, 0, 0, 1, 0, 0, 20],
-            [0, 9, 2, 0, 0, 1, 0, 20],
-            [-8, 6, -4, 0, 0, 0, 1, 0],
-        ],
-        dtype=np.float64,
-    )
+    # m = np.array(
+    # [
+    # [1, 1, 1, 1, 0, 0, 0, 12],
+    # [5, 3, 0, 0, 1, 0, 0, 20],
+    # [0, 9, 2, 0, 0, 1, 0, 20],
+    # [-8, 6, -4, 0, 0, 0, 1, 0],
+    # ],
+    # dtype=np.float64,
+    # )
 
     c = [[1, 1, 1, 12], [5, 3, 0, 20], [0, 9, 2, 20]]
     p = [8, -6, 4]
 
-    simplex_solve(c, p)
+    print(simplex_solve(c, p))

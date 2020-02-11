@@ -130,7 +130,7 @@ if __name__ == "__main__":
     is executed by the book as well.
     """
 
-    c = [[1, 1, 1, 12], [5, 3, 0, 20], [0, 9, 2, 20]]
+    c = [[1, 1, 1, 12], [5, 3, 0, 20], [0, 9, 2, 15]]
     p = [8, -6, 4]
 
     print(simplex_solve(c, p))

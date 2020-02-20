@@ -121,13 +121,7 @@ def simplex_solve(c, p):
 if __name__ == "__main__":
 
     """
-    Here is Problem 5, run through this method.
-
-    As you can see, it gets the wrong answer.  I'm not sure why, since
-    as far as I can tell, it follows all of the constraints.
-
-    The problem is probably in the row-reduction, even though that part
-    is executed by the book as well.
+    Here is Problem 5, run through this method.  It returns the correct answer (62).
     """
 
     c = [[1, 1, 1, 12], [5, 3, 0, 20], [0, 9, 2, 15]]

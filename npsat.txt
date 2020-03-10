@@ -176,26 +176,15 @@ Next, we will build a maximal-clique problem whose solution is the same as the s
 So, we've reduced 3D matching to the maximal clique problem.  This shows that the maximal clique problem is at least as hard as 3D matching.  Also, our reduction took place in polynomial time (linear time, actually).  Since 3D matching is known to be NP-complete, and the maximal clique problem is in NP, it must be NP-complete as well.
 
 
-b. Let's prove that the decision-problem version of the minimum vertex cover (MVC) problem is NP-complete, by reducing MIN-ONES-2-SAT to it.
-
-In MIN-ONES-2-SAT, you are given a satisfiable 2-CNF formula.  (You can check that it's satisfiable yourself in polynomial time, if you feel like it.)  Your goal is to find a way to satisfy the formula while setting as few of its variables to 1 as possible.  It's known to be NP-complete.
+b. Let's prove that the decision-problem version of the minimum vertex cover (MVC) problem is NP-complete, by reducing the maximal clique problem to it.
 
 First, let's show that MVC is in NP, which is pretty straightforward.  To check a vertex cover, you just need to check every edge, which is linear, and that it's smaller than some bound, which is also linear.
 
-	Now the reduction.  MAX-2-SAT is like 3-SAT, except the CNF terms have only two variables, and you have to maximize the number satisfied, rather than satisfying all of them.  It's not normally a decision problem, so we ask if it's possible to satisfy more than some n.  The MVC problem asks for the minimal subset of vertices of some graph such that all edges touch at least one member of the subset.  Again, we do the threshold thing to make it a decision problem.
+Now the reduction.  Take some graph G.  We want to find its MVC, which we'll call M.  Find the graph's complement C, and then find the maximal clique Q of C.  M contains every vertex whose counterpart in C is not a member of Q.
 
+Why is this true?  First, let's show that this produces a valid vertex cover.  For each edge (a, b) in G, the corresponding nodes a and b are not connected in C.  Therefore, at least one must not be in Q, since Q is fully connected.  Since M contains all vertices not in Q, then at least one of (a, b) must be in G.  Therefore, G is a vertex cover.
 
-Now the reduction!  
-
-Let's start with some MIN-ONES-2-SAT problem P.  We're going to build a corresponding graph G, find its MVC, and then translate back to a solution for P.
-
-Start with an empty G.  Add a node for each variable used in P, and for its negation.  Connect the two.  So, for instance, a and !a will be connected. Next, for every term in P, add an edge to G.  For instance the term (a ∪ !b) would connect the nodes corresponding to a and !b.
-
-Now, find the minimum vertex cover on G.  We can make a few guarantees about it.  First, for each variable x in P, either the node corresponding to x or the node corresponding to !x will be included in G.  That's because they are connected, and that edge has to be exposed to at least one node in G.  Second, for each edge which corresponds to a term in P, at least one of its two endpoints will be in G (again, see definition of "vertex cover"), corresponding to the fact that one of the term's two conditions must be true.
-
-P is guaranteed to be satisfiable, so we will 
-
-
+Second, let's show that this vertex cover is minimal.  We know Q is maximal, i.e. there is no larger subgraph of C which fits the constraint.  As we just showed, the constraint on Q (that it must be fully connected) corresponds perfectly to the constraint on M (that every edge must touch a member of M).  Therefore, the smallest M corresponds to the largest Q, and vice versa.  So, we can guarantee that M is the minimal vertex cover.
 
 
 8.

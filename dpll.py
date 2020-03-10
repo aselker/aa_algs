@@ -13,16 +13,21 @@ def dpll(f):
     or None if it isn't.
 	"""
 
+    print(f"Beginning work on {f}...")
+
     # Empty problems have trivial solutions
     if len(f) == 0:
+        print("Return [] on empty formula")
         return []
 
     # Do we already have an empty clause?
     if any([len(clause) == 0 for clause in f]):
+        print("Return None on empty clause")
         return None
 
     # Almost empty problems have almost trivial solutions
     if len(f) == 1:
+        print(f"Return {f[0]} on only one clause")
         return f[0]
 
     # Ok, if we've gotten here, we need to do some actual thinking.
@@ -36,6 +41,9 @@ def dpll(f):
 		Sets 'var' to a value (True if it's positive, False if it's negative)
 		Returns simplified version
 		"""
+
+        print(f"Removing {var} from {formula}")
+
         new_formula = []
         for term in formula:
             if var in term:
@@ -54,6 +62,7 @@ def dpll(f):
     unit_vars = []  # Holds any variables which are unit-clause-able
     for clause in f:
         if len(clause) == 1:
+            print(f"Set {clause[0]} from unit clause")
             unit_vars.append(clause[0])
 
     for var in unit_vars:
@@ -81,13 +90,17 @@ def dpll(f):
         for var in clause:
             smallest_var = min(abs(var), smallest_var)
 
+    print(f"Trying branch with {var}...")
     true_branch = dpll(remove_variable(f, var))
     if true_branch is not None:
+        print(f"Took branch with {var}")
         return true_branch + unit_vars + [var]
 
+    print(f"Trying branch with {-var}...")
     false_branch = dpll(remove_variable(f, -var))
     if false_branch is not None:
-        return false_branch + unit_vars + [var]
+        print(f"Took branch with {-var}")
+        return false_branch + unit_vars + [-var]
 
     return None
 

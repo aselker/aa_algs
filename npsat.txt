@@ -26,7 +26,8 @@ We can't get any more than two variables this way.
 
 4.
 a. !x, y, z
-b. The rest of this problem is on paper.
+b, c. These are on paper.
+d. The extra 'b' color is a bit awkward, so it seems neater not to use it.  But, you can't solve 3-SAT with it, because it's doable in polynomial time (linear time, in fact).
 
 5. 
 a and b.  Here's pseudo-Python which finds whether there is a solution, and if so, returns it.  I've combined sub-problems a and b, since they're basically the same -- the only difference is a few return statements -- and brevity is the soul of math.
@@ -175,19 +176,25 @@ Next, we will build a maximal-clique problem whose solution is the same as the s
 So, we've reduced 3D matching to the maximal clique problem.  This shows that the maximal clique problem is at least as hard as 3D matching.  Also, our reduction took place in polynomial time (linear time, actually).  Since 3D matching is known to be NP-complete, and the maximal clique problem is in NP, it must be NP-complete as well.
 
 
-b. Let's prove that the decision-problem version of the minimum vertex cover (MVC) problem is NP-complete, by reducing MAX-2-SAT to it.
+b. Let's prove that the decision-problem version of the minimum vertex cover (MVC) problem is NP-complete, by reducing MIN-ONES-2-SAT to it.
 
-Also, we have to show that it's in NP, which is pretty straightforward.  To check a vertex cover, you just need to check every edge, which is linear, and that it's smaller than some bound, which is also linear.
+In MIN-ONES-2-SAT, you are given a satisfiable 2-CNF formula.  (You can check that it's satisfiable yourself in polynomial time, if you feel like it.)  Your goal is to find a way to satisfy the formula while setting as few of its variables to 1 as possible.  It's known to be NP-complete.
 
-Now the reduction.  MAX-2-SAT is like 3-SAT, except the CNF terms have only two variables, and you have to maximize the number satisfied, rather than satisfying all of them.  It's not normally a decision problem, so we ask if it's possible to satisfy more than some n.  The MVC problem asks for the minimal subset of vertices of some graph such that all edges touch at least one member of the subset.  Again, we do the threshold thing to make it a decision problem.
+First, let's show that MVC is in NP, which is pretty straightforward.  To check a vertex cover, you just need to check every edge, which is linear, and that it's smaller than some bound, which is also linear.
 
-Let's start with some MAX-2-SAT problem P.  We're going to build a corresponding graph G, find its MVC, and then translate back to a solution for P.
+	Now the reduction.  MAX-2-SAT is like 3-SAT, except the CNF terms have only two variables, and you have to maximize the number satisfied, rather than satisfying all of them.  It's not normally a decision problem, so we ask if it's possible to satisfy more than some n.  The MVC problem asks for the minimal subset of vertices of some graph such that all edges touch at least one member of the subset.  Again, we do the threshold thing to make it a decision problem.
+
+
+Now the reduction!  
+
+Let's start with some MIN-ONES-2-SAT problem P.  We're going to build a corresponding graph G, find its MVC, and then translate back to a solution for P.
 
 Start with an empty G.  Add a node for each variable used in P, and for its negation.  Connect the two.  So, for instance, a and !a will be connected. Next, for every term in P, add an edge to G.  For instance the term (a ∪ !b) would connect the nodes corresponding to a and !b.
 
-Now, find the minimum vertex cover on G.  For each variable, it will contain at least one of that variable or its negation, since the edge between the two must be covered.  Also, each term will be satisfied, since at least one of its endpoints will be in the cover, so at least one of its variables will be true.
+Now, find the minimum vertex cover on G.  We can make a few guarantees about it.  First, for each variable x in P, either the node corresponding to x or the node corresponding to !x will be included in G.  That's because they are connected, and that edge has to be exposed to at least one node in G.  Second, for each edge which corresponds to a term in P, at least one of its two endpoints will be in G (again, see definition of "vertex cover"), corresponding to the fact that one of the term's two conditions must be true.
 
-If not all terms in P can be satisfied at the same time, this might make a variable both true and false, i.e. the nodes corresponding to a and !a could both be included in the cover.  This gives you an upper limit on how many terms can be satisfied at once.   TODO: Rest of this
+P is guaranteed to be satisfiable, so we will 
+
 
 
 

@@ -115,13 +115,13 @@ def dpll(f):
     true_branch = dpll(remove_variable(f, var))
     if true_branch is not None:
         print(f"Took branch with {var}")
-        return true_branch + unit_vars + [var]
+        return true_branch + list(vars_to_set) + [var]
 
     print(f"Trying branch with {-var}...")
     false_branch = dpll(remove_variable(f, -var))
     if false_branch is not None:
         print(f"Took branch with {-var}")
-        return false_branch + unit_vars + [-var]
+        return false_branch + list(vars_to_set) + [-var]
 
     return None
 

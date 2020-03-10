@@ -1,3 +1,5 @@
+Adam Selker - NP SAT homework
+
 1.
 a. False -- "...using a nondeterministic Turing machine."
 b. False  -- "...using a nondeterministic Turing machine." or "... if they are in P."
@@ -28,8 +30,92 @@ b. The rest of this problem is on paper.
 
 5. 
 a and b.  Here's pseudo-Python which finds whether there is a solution, and if so, returns it.  I've combined sub-problems a and b, since they're basically the same -- the only difference is a few return statements -- and brevity is the soul of math.
+
+Note that I didn't implement pure literal removal, in pseudocode or real code.  That's because, in this implementation, it won't improve performance much.  
 	
-TODO: Put in pseudocode
+def dpll(f):
+    """
+    f is the input formula, as a list of 3-tuples of ints.  Each int is a
+    variable index, and is negative if the variable is negated.
+
+    Output:
+        If the formula is satisfiable, a list of variables, positive iff true.
+        Variables will be listed only if their value matters; they'll be left
+        out if they can be true or false.
+        
+        If the formula is not satisfiable, then None.
+    """
+
+    # Empty problems have trivial solutions
+    if f is empty:
+        return []
+
+    # Do we already have an empty clause?
+    if any(f is empty):
+        return None
+
+    # Almost empty problems have almost trivial solutions
+    if len(f) == 1:
+        return f[0]
+
+    # Let's make a helper function which removes variables.
+    def remove_variable(formula, var):
+        """
+        Sets 'var' to a value (True if it's positive, False if it's negative)
+        Returns simplified version
+        """
+
+        new_formula = []
+        for term in formula:
+            if var in term:
+                do nothing  # It's been satisfied!
+            elif -var in term:
+                new_formula.append(term.remove(-var))
+            else:
+                new_formula.append(term)
+
+        return new_formula
+
+    # Are there any unit clauses?  If so, give those variables values
+
+    unit_vars = []  # Holds any variables which are unit-clause-able
+    for clause in f:
+        if len(clause) == 1:
+            unit_vars.append(clause)
+
+    for var in unit_vars:
+        # Check if any unit vars are present positively and negatively.  Yes, it's
+        # O(n^2), but it's probably faster than not doing it, and it's actually
+        # mandatory in this implementation.
+        if -var in unit_vars:
+            return None
+
+        f = remove_variable(f, var)
+
+    # Check again to see if we've hit something trivially true or false
+    if len(f) == 0:
+        return unit_vars
+
+    if any([len(clause) == 0 for clause in f]):
+        return None
+
+    # Ok, we have to take a guess.  Try a value, recurse, then try the other.
+    # It's important to choose a variable in a way that doesn't cause use to
+    # accidentally redo work; we choose the smallest numerically.
+
+    smallest_var = min(abs(f))
+
+    true_branch = dpll(remove_variable(f, var))
+    if true_branch is not None:
+        return true_branch + unit_vars + [var]
+
+    false_branch = dpll(remove_variable(f, -var))
+    if false_branch is not None:
+        return false_branch + unit_vars + [-var]
+
+    return None
+
+c and d: Attached separately.
 
 6. 
 a. Because sudoku on a fixed-size grid is a bounded problem, and so its complexity class is constant.  At worst, a naive algorithm can solve one in about 9^81 steps, which is a lot but is fixed.  Thus, only problems in P can be reduced to it (by solving them).

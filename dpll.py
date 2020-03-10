@@ -139,6 +139,10 @@ if __name__ == "__main__":
     with open(sys.argv[1]) as f:
         clauses = parse_dimacs(f.readlines())
 
+    print("Formula to solve:")
     print(clauses)
 
-    print(dpll(clauses))
+    res = dpll(clauses)
+
+    print("")
+    print(f"Result: {res}")

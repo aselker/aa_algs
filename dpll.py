@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import numpy as np
 
 
@@ -22,12 +23,12 @@ def dpll(f):
 
     # Almost empty problems have almost trivial solutions
     if len(f) == 1:
-        return {abs(var): (True if 0 < var else False) for var in f[0]}
+        return f[0]
 
     # Ok, if we've gotten here, we need to do some actual thinking.
     # For future use, let's make a copy of f, so we don't accidentally change
     # the original.
-    f = copy(f)
+    f = f.copy()
 
     # Let's make a helper function which removes variables.
     def remove_variable(formula, var):
@@ -40,7 +41,7 @@ def dpll(f):
             if var in term:
                 pass  # It's been satisfied!
             elif -var in term:
-                t = copy(term)
+                t = term.copy()
                 t.remove(-var)
                 new_formula.append(t)
             else:
@@ -98,4 +99,33 @@ def parse_dimacs(lines):
     Return it in a form that dpll() can ingest
     """
 
+    num_vars = None
+    num_clauses = None
+    clauses = []
+
     for line in lines:
+        words = line.split(" ")
+        words = [word.replace("\r", "").replace("\n", "") for word in words]
+        if (len(words) == 0) or words[0] == "c":
+            pass
+        elif words[0] == "p":
+            assert words[1] == "cnf"
+            num_vars = int(words[2])
+            num_clauses = int(words[3])
+        else:
+            clause = [int(word) for word in words[:-1]]
+            clauses.append(clause)
+            assert words[-1] == "0"
+
+    assert len(clauses) == num_clauses
+
+    return clauses
+
+
+if __name__ == "__main__":
+    with open(sys.argv[1]) as f:
+        clauses = parse_dimacs(f.readlines())
+
+    print(clauses)
+
+    print(dpll(clauses))

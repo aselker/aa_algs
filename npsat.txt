@@ -1,9 +1,9 @@
 1.
 a. False -- "...using a nondeterministic Turing machine."
 b. False  -- "...using a nondeterministic Turing machine." or "... if they are in P."
-c. False -- I guess replacing "NP-hard" with "P" would work, or just put a "not" at the beginning?  Not all NP-hard problems are even solvable!
+c. False -- Replacing "NP-hard" with "P" would work, or just put a "not" at the beginning?  Not all NP-hard problems are even solvable!
 d. False -- replace "O(n^9)" with "Exponential"
-e. False -- "...unless P=NP"
+e. False -- "...unless P=NP."
 
 2.
 a. (shirt ∪ not(tie)) ∩ (shirt ∪ tie) ∩ (not(shirt) ∩ not(tie))

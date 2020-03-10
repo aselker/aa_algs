@@ -9,9 +9,13 @@ def dpll(f):
     f is the input formula, as a list of 3-tuples of ints.  Each int is a
     variable index, and is negative if the variable is negated.
 
-    Output is a list of vars, positive iff true, if the formula is satisfiable,
-    or None if it isn't.
-	"""
+    Output:
+        If the formula is satisfiable, a list of variables, positive iff true.
+        Variables will be listed only if their value matters; they'll be left
+        out if they can be true or false.
+        
+        If the formula is not satisfiable, then None.
+    """
 
     print(f"Beginning work on {f}...")
 
@@ -38,9 +42,9 @@ def dpll(f):
     # Let's make a helper function which removes variables.
     def remove_variable(formula, var):
         """
-		Sets 'var' to a value (True if it's positive, False if it's negative)
-		Returns simplified version
-		"""
+        Sets 'var' to a value (True if it's positive, False if it's negative)
+        Returns simplified version
+        """
 
         print(f"Removing {var} from {formula}")
 
@@ -146,3 +150,62 @@ if __name__ == "__main__":
 
     print("")
     print(f"Result: {res}")
+
+    """
+    A few runs:
+    (intermediate output omitted for legibility)
+
+    input:
+    p cnf 2 3
+    1 -2 0
+    1 2 0
+    -1 -2 0
+
+    output:
+    [1, -2]
+
+    input:
+    p cnf 3 3
+    1 2 3 0
+    -1 -2 3 0
+    -1 2 -3 0
+
+    output:
+    [1, -2, 3]
+
+    input:
+    p cnf 5 3
+    1 -5 4 0
+    -1 5 3 4 0
+    -3 -4 0
+
+    output:
+    [1, -5, 3, -4]
+
+    input:
+    p cnf 5 7
+    1 -5 4 0
+    -1 5 3 4 0
+    -3 -4 0
+    1 -5 3 4 0
+    3 -4 0
+    -1 5 4 0
+    -1 -5 0
+
+    output:
+    [-1, 4, -5]
+
+    input:
+    p cnf 5 8
+    1 -5 4 0
+    -1 5 3 4 0
+    -3 -4 0
+    1 -5 3 4 0
+    3 -4 0
+    -1 5 4 0
+    -1 -5 0
+    1 4 0
+
+    output:
+    None
+    """

@@ -62,18 +62,35 @@ def dpll(f):
         return new_formula
 
     # Are there any unit clauses?  If so, give those variables values
-
     unit_vars = []  # Holds any variables which are unit-clause-able
     for clause in f:
         if len(clause) == 1:
             print(f"Set {clause[0]} from unit clause")
             unit_vars.append(clause[0])
 
-    for var in unit_vars:
+    # Also look for pure literals
+    # (Use a Python dict for deduplication)
+    vars_used = {}
+    for clause in f:
+        for var in clause:
+            vars_used[var] = None
+
+    pure_literals = []
+    for var in vars_used:
+        if -var not in vars_used:
+            print(f"Set {var} as a pure literal")
+            pure_literals.append(var)
+
+    # Combine lists of variables we have to set into a dict, for deduplication
+    vars_to_set = {var: None for var in unit_vars}
+    for var in pure_literals:
+        vars_to_set[var] = None
+
+    for var in vars_to_set.keys():
         # Check if any unit vars are present positively and negatively.  Yes, it's
         # O(n^2), but it's probably faster than not doing it, and it's actually
         # mandatory in this implementation.
-        if -var in unit_vars:
+        if -var in vars_to_set:
             return None
 
         f = remove_variable(f, var)

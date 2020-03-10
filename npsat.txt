@@ -31,8 +31,6 @@ b. The rest of this problem is on paper.
 5. 
 a and b.  Here's pseudo-Python which finds whether there is a solution, and if so, returns it.  I've combined sub-problems a and b, since they're basically the same -- the only difference is a few return statements -- and brevity is the soul of math.
 
-Note that I didn't implement pure literal removal, in pseudocode or real code.  That's because, in this implementation, it won't improve performance much.  
-	
 def dpll(f):
     """
     f is the input formula, as a list of 3-tuples of ints.  Each int is a
@@ -77,13 +75,26 @@ def dpll(f):
         return new_formula
 
     # Are there any unit clauses?  If so, give those variables values
-
     unit_vars = []  # Holds any variables which are unit-clause-able
     for clause in f:
         if len(clause) == 1:
             unit_vars.append(clause)
 
-    for var in unit_vars:
+
+    # Also look for pure literals
+    vars_used = []
+    for clause in f:
+        for var in clause:
+            vars_used.append_with_deduplication(var)
+
+    pure_literals = []
+    for var in vars_used:
+        if -var not in vars_used:
+            pure_literals.append(var)
+
+		vars_to_set = deduplicate(unit_vars + pure_literals)
+
+    for var in vars_to_set:
         # Check if any unit vars are present positively and negatively.  Yes, it's
         # O(n^2), but it's probably faster than not doing it, and it's actually
         # mandatory in this implementation.
@@ -107,11 +118,11 @@ def dpll(f):
 
     true_branch = dpll(remove_variable(f, var))
     if true_branch is not None:
-        return true_branch + unit_vars + [var]
+        return true_branch + vars_to_set + [var]
 
     false_branch = dpll(remove_variable(f, -var))
     if false_branch is not None:
-        return false_branch + unit_vars + [-var]
+        return false_branch + vars_to_set + [-var]
 
     return None
 

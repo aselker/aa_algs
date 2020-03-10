@@ -27,20 +27,9 @@ a. !x, y, z
 b. The rest of this problem is on paper.
 
 5. 
-
-a and b.  Here's pseudo-Python which finds whether there is a solution, and if so, returns it.
-
-def dpll(f):
-	"""
-	f is the input formula, as a list of 3-tuples of strings.  Each string is a variable name.
-	Output is a dict of variable -> True or False, if the formula is satisfiable, or None if it isn't.
-	"""
-
-	# Empty problems have trivial solutions
-	if len(f) == 0:
-		return {} 
-
+a and b.  Here's pseudo-Python which finds whether there is a solution, and if so, returns it.  I've combined sub-problems a and b, since they're basically the same -- the only difference is a few return statements -- and brevity is the soul of math.
 	
+TODO: Put in pseudocode
 
 6. 
 a. Because sudoku on a fixed-size grid is a bounded problem, and so its complexity class is constant.  At worst, a naive algorithm can solve one in about 9^81 steps, which is a lot but is fixed.  Thus, only problems in P can be reduced to it (by solving them).

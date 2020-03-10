@@ -1,0 +1,13 @@
+Problem 8
+
+Consider a bipartite graph M, for which we would like to find a maximal matching.  We can construct a similar graph F, and perform flow optimization on F to find a maximal matching for M.
+
+First, we construct F from M.  We add a source node S, and connect it to every node on the left half of M.  We also add a sink T, and connect it to every node on the right half of M.  F is a directed weighted graph, while M is neither of these; fortunately, our modifications will be simple.  F's edges are all directed from left to right, i.e. from S to the left half to the right half to T.  Also, they all have weight 1.  
+
+Now that we have a correspondence between the graphs M and F, we will construct a correspondence between matches on M and flows across F.  If an edge ab (from node a to node b) is in the match on M, it has flow 1 in F.  If it is not a member of the match, it has flow 0.  We restrict ourselves to integral flows, to simplify things; if we allow non-integral flows, I'm pretty sure the solutions will still line up, but it's harder to prove.
+
+The constraints on the two are the same.  The restriction that flows must be between 0 and 1 corresponds to the fact that edges can only be in the match, or out of the match.  In F, the edges to and from S and T guarantee that each node is only used in one flow, since if they were used in more they would exceed their capacity of 1.  This corresponds to the requirement in M that a match not connect one node to more than one other node.  
+
+We can find an optimal flow, O, across F, using any algorithm, such as the Ford-Fulkerson algorithm.  Since O is optimal, we know that the total flow out of S is as high as it can be.  Since each edge out of S has capacity 1, that means that we've made as many of those edges have flow 1 as possible.  Each of those edges connects to a node on the left side, and each of those is connected to the right side via one or more edges.  The total flow across these must be the same as the flow out of F.  Again, all of those edges have capacity 1, so in optimizing total flow to find O, we have optimized the number of middle edges which are carrying flow.  That number cannot be higher.
+
+Each left-to-right edge of F which carries flow corresponds to an edge of M which is a member of a matching.  Since the flow O is maximal, it has a maximal number of left-to-right edges which carry flow.  Therefore, its corresponding matching in M must also be maximal, since if there were a better matching, it would correspond to a better flow, which cannot exist.

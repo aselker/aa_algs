@@ -1,0 +1,128 @@
+1.
+a. False -- "...using a nondeterministic Turing machine."
+b. False  -- "...using a nondeterministic Turing machine." or "... if they are in P."
+c. False -- I guess replacing "NP-hard" with "P" would work, or just put a "not" at the beginning?  Not all NP-hard problems are even solvable!
+d. False -- replace "O(n^9)" with "Exponential"
+e. False -- "...unless P=NP"
+
+2.
+a. (shirt ∪ not(tie)) ∩ (shirt ∪ tie) ∩ (not(shirt) ∩ not(tie))
+b. Yes, a shirt but not a tie satisfies all three:
+* Vicky is OK with a shirt or (not a tie), this satisfies both
+* Emily is OK with not wearing a tie as long as we have a shirt, which is what we're doing
+* Prava is OK as long as we're not wearing both
+
+3.
+Because 3-SAT statements can be "chained" together using a series of dummy variables, but 2-SAT statements can't.  This means that reducing a SAT problem to 2-SAT sometimes involves solving it, which can't be done in polynomial time (unless P=NP).  
+
+Here's an example. SAT says: (a ∪ b ∪ c ∪ d ∪ e) .  This is satisfiable with any of a, b, c, d, or e.
+We can split the variables into (a,b), (c), (d,e) to separate them into 3-SAT-able chunks:
+(a ∪ b ∪ x) ∩ (!x ∪ c ∪ y) ∩ (!y ∪ d ∪ e)
+I won't go into too much detail there since we covered this in class.  Now, we can try to reduce this to 2-SAT the same way:
+(a ∪ x) ∩ (!x ∪ y) ∩ ...
+We can't get any more than two variables this way.  
+
+4.
+a. !x, y, z
+b. The rest of this problem is on paper.
+
+5. 
+
+a and b.  Here's pseudo-Python which finds whether there is a solution, and if so, returns it.
+
+def dpll(f):
+	"""
+	f is the input formula, as a list of 3-tuples of strings.  Each string is a variable name.
+	Output is a dict of variable -> True or False, if the formula is satisfiable, or None if it isn't.
+	"""
+
+	# Empty problems have trivial solutions
+	if len(f) == 0:
+		return {} 
+
+	
+
+6. 
+a. Because sudoku on a fixed-size grid is a bounded problem, and so its complexity class is constant.  At worst, a naive algorithm can solve one in about 9^81 steps, which is a lot but is fixed.  Thus, only problems in P can be reduced to it (by solving them).
+
+b. First, we define the "exactly one" gadget.  This converts a set of three symbols (a, b, c) into five CNF terms which collectively encode "a or b or c, but not more than one of them".  The concept is to have sets of terms where, in each set, exactly one term will fail if some particular set of >1 variables is true.
+
+Here is the shape for 3-CNF:
+
+(a ∪ b ∪ c) ∩ (a ∪ !b ∪ !c) ∩ (!a ∪ b ∪ !c) ∩ (!a ∪ !b ∪ c) ∩ (!a ∪ !b ∪ !c)
+
+The first term ensures that at least one variable is true.  One of the second through fourth will fail if exactly two variables are true, and the last will fail if all three are true.  Therefore, the set of five will pass iff exactly one variable is true.
+
+You can generalize for more terms.  For 4-CNF, for instance, we need four sets of terms; here is one example of each:
+(a ∪ b ∪ c ∪ d)  						Ensure at least one true; we need only this one.
+(!a ∪ !b ∪ c ∪ d)  					Fail if exactly two (a and b) are true; we need (2 choose 2) = 6 of these.
+(!a ∪ !b ∪ !c ∪ d)  				Fail if exactly three (a, b, and c) are true; we need 4 of these.
+(!a ∪ !b ∪ !c ∪ !d)  				Fail if all four are true; we need only this one.
+
+Now that we have the "exactly one" gadget, we can reduce sudoku to CNF-SAT.  We will make an intermediate list of exactly-one statements ("EO statements"), and then run them all through the gadget to produce the CNF-SAT statements.  We will have one EO statement per digit per column, row, and box.  For instance, a 9x9 sudoku problem has 9 digits, 9 rows, 9 columns, and 9 boxes.  So, there will be 9 * (9+9+9) statements. 
+
+Each set of n statements (one per digit) guarantees one of the constraints of a sudoku problem.  These constraints are:
+* Each row must have all 9 digits exactly once each
+* Each column must have all 9 digits exactly once each
+* Each box must have all 9 digits exactly once each
+
+We assign a variable to each row-column-digit triplet.  For instance, the variable x_(2,3,4) is true iff cell (2,3) has the digit 4 in it. 
+
+The row constraint says that there must be exactly one of each digit in each row; so, of all variables x_(2, a, 4), exactly one must be true, because there must be exactly one digit 4 in the 2nd row.  Likewise, because of the column constraint, of all variables x_(a, 3, 4), exactly one must be true.  This leaves the box constraint.  I won't detail exactly how to enumerate all of the cells in a box, just to save time, but the principle is the same; we'll end up with a set of n variables where exactly one must be true, corresponding to how exactly one cell in the sqrt(n) * sqrt(n) box must contain the digit 4.
+
+Each of these constraints can be converted directly to an EO statement.  That statement will cover only one column, row, or box, and also only one digit.  Thus, we need n such statements per row, column, and box, giving us a total of n * (n + n + n) EO statements.  Using the gadget defined earlier, we can convert these EO statements into a CNF-SAT problem.  Together, these enforce all of the constraints of the sudoku puzzle, so solving the CNF-SAT problem solves the sudoku puzzle.
+
+
+7. 
+a. Let's prove that the maximal clique problem is NP-complete, by reducing the 3D matching problem to it.
+
+First, a quick proof that the decision version of the maximal clique problem is in NP.  A solution, in the form of a clique, can be checked for correctness (i.e. is it a clique, and larger than our threshold?) in n^2 time, where n is the number of elements in the clique.  This is polynomial.
+
+Now, let's reduce the maximal 3-dimensional matching problem ("3D matching") to the maximal clique problem.
+
+Throughout this reduction, I'll talk about maximizing things.  For a real NP-completeness proof, we'd use a thresholded version so it's a decision problem.  For instance, rather than "how many edges can you select?", the problem would be, "can you select more than 5 edges?".  For simplicity, I won't worry about that here; the threshold behaves the same among the problems.
+
+We start with a tripartite 3-hypergraph M.  (That is, three sets of nodes, with some "hyper-edges" that connect one node from the first set, one from the second, and one from the third.)  This represents the 3D matching problem.  The goal of the 3D matching problem is to select a subset of M's edges such that no two edges share a node, while maximizing the number of edges we've selected.  
+
+Next, we will build a maximal-clique problem whose solution is the same as the solution to the maximal 3D matching of M.  Make a new graph C.  For each edge in M, add a corresponding node to C.  Connect two nodes in C iff their corresponding edges in M share no nodes.  Now, find the maximal clique within C.  Because the clique is a complete subgraph, no two nodes' corresponding edges in M can share any nodes.  So, this corresponds to a valid matching on M.  Also, since the clique is maximal, there is no larger subgraph which shares this property.  Therefore, there is no larger matching on M.
+
+So, we've reduced 3D matching to the maximal clique problem.  This shows that the maximal clique problem is at least as hard as 3D matching.  Also, our reduction took place in polynomial time (linear time, actually).  Since 3D matching is known to be NP-complete, and the maximal clique problem is in NP, it must be NP-complete as well.
+
+
+b. Let's prove that the decision-problem version of the minimum vertex cover (MVC) problem is NP-complete, by reducing MAX-2-SAT to it.
+
+Also, we have to show that it's in NP, which is pretty straightforward.  To check a vertex cover, you just need to check every edge, which is linear, and that it's smaller than some bound, which is also linear.
+
+Now the reduction.  MAX-2-SAT is like 3-SAT, except the CNF terms have only two variables, and you have to maximize the number satisfied, rather than satisfying all of them.  It's not normally a decision problem, so we ask if it's possible to satisfy more than some n.  The MVC problem asks for the minimal subset of vertices of some graph such that all edges touch at least one member of the subset.  Again, we do the threshold thing to make it a decision problem.
+
+Let's start with some MAX-2-SAT problem P.  We're going to build a corresponding graph G, find its MVC, and then translate back to a solution for P.
+
+Start with an empty G.  Add a node for each variable used in P, and for its negation.  Connect the two.  So, for instance, a and !a will be connected. Next, for every term in P, add an edge to G.  For instance the term (a ∪ !b) would connect the nodes corresponding to a and !b.
+
+Now, find the minimum vertex cover on G.  For each variable, it will contain at least one of that variable or its negation, since the edge between the two must be covered.  Also, each term will be satisfied, since at least one of its endpoints will be in the cover, so at least one of its variables will be true.
+
+If not all terms in P can be satisfied at the same time, this might make a variable both true and false, i.e. the nodes corresponding to a and !a could both be included in the cover.  This gives you an upper limit on how many terms can be satisfied at once.   TODO: Rest of this
+
+
+
+8.
+This one is fairly straightforward, since the travelling salesman problem (TSP) is sort of a superset of the Hamiltonian circuit problem.  
+
+Start with a graph H.  We want to know if there's a Hamiltonian circuit on H.  Now, create a weighted graph T.  T has all of H's nodes and edges; the edges are weighted 0.  Add all other possible edges into T, and weight them 1.
+
+Solve the TSP on T.  We're using the decision version of the TSP, so ask if there are any circuits with weight 0.  If so, that's a Hamiltonian circuit on H, since we've found a circuit which touches every vertex and doesn't cross any nonexistent (i.e. weight 1) edges.  If not, there isn't one.
+
+b. 
+The maximum cut problem is to find the subset S of nodes within some graph G such that the highest number of edges go between nodes which are within S to those outside S.  (Edges between elements of S, or elements of G-S, don't matter.)  The decision-problem version of this asks whether there's a cut of size greater than some n, i.e. some S such that more than n edges go between S and G-S.
+
+Note that there are a few edge cases we skip here.  For instance, if a variable only appears in one polarity, or if all three variables in a term are true, it might be set inconsistently.  Also, the solution might be inverted, since max cut is reversible (if S is a max cut, then G-S also is).  
+
+For each term in A (e.g. (a ∪ !b ∪ c)), make a cluster of three nodes in G.  Each node corresponds to a variable (negated or not) in that term.  Label each node with its variable, and whether or not that variable is negated.  Connect all three nodes within each cluster.  Also, connect each pair of nodes which are mutually exclusive, i.e. the same variable but only one is negated.
+
+Now, find the max cut S on the graph.  Are there any clusters where none of their members are in S?  If so, invert it.  It might be an invalid solution which is the inverse of a valid solution.  If there are still any clusters with no members in S, then A has no satisfactory solution.  Otherwise, A does have a satisfactory solution, and we have found it: every variable in S is true, and every variable in G-S is false.
+
+Why does this work?  If A has a solution, then the cut on G corresponding to the solution will include every edge except for one per cluster, which is the most which is possible.
+
+Let e(G) be the number of edges in G.  Let |A| be the number of terms in A, which is also the number of clusters in G.  The max cut will always have a size less than or equal to e(G) - |A|, because it's not possible for all three edges in a fully-connected trio of nodes to cross the cut.  In order for all the rest of the within-cluster edges to be included in the cut, one or two variables have to be true.  (If all three are true, you might get spurious solutions, but those are easy to correct.)
+
+On to the connections between clusters.  If a variable x is true, then all instances of x will be in S, and all instances of !s will not be.  This ensures that every edge crosses between S and G-S, since only inverse variables are connected.
